@@ -380,7 +380,7 @@ class GameplayOption
 
 	public static function loadGameplayOptions():Bool
 	{
-		var save:CocoaSave = FunkySettings.bind('gamechangers');
+		var save:FlxSave = FunkySettings.bind('gamechangers');
 
 		if (save.data.options == null)
 			return saveGameplayOptions();
@@ -392,7 +392,7 @@ class GameplayOption
 
 	public static function saveGameplayOptions():Bool
 	{
-		var save:CocoaSave = FunkySettings.bind('gamechangers');
+		var save:FlxSave = FunkySettings.bind('gamechangers');
 		save.data.options = options;
 		return save.flush().succeeded;
 	}

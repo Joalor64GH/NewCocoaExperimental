@@ -412,7 +412,7 @@ class OldChartingState extends MusicBeatState
 
 		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'Load Autosave', function()
 		{
-			PlayState.SONG = Song.parseJSONshit(CocoaSave.save.data.autosave);
+			PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
 			MusicBeatState.resetState();
 		});
 
@@ -1194,15 +1194,15 @@ class OldChartingState extends MusicBeatState
 		check_vortex.callback = function()
 		{	
 			strumGroup.visible = check_vortex.checked;
-			CocoaSave.save.data.chart_vortex = check_vortex.checked;
-			CocoaSave.save.flush();
+			FlxG.save.data.chart_vortex = check_vortex.checked;
+			FlxG.save.flush();
 		};
 		check_vortex.callback();
 		
-		if (CocoaSave.save.data.chart_vortex == null) 
-			CocoaSave.save.data.chart_vortex = false;
+		if (FlxG.save.data.chart_vortex == null) 
+			FlxG.save.data.chart_vortex = false;
 
-		check_vortex.checked = CocoaSave.save.data.chart_vortex;
+		check_vortex.checked = FlxG.save.data.chart_vortex;
 
 		playSoundBf = new FlxUICheckBox(check_mute_inst.x, check_mute_vocals.y + 30, null, null, 'Play Sound (Boyfriend notes)', 100);
 		playSoundBf.checked = false;
@@ -2660,10 +2660,10 @@ class OldChartingState extends MusicBeatState
 
 	function autosaveSong():Void
 	{
-		CocoaSave.save.data.autosave = Json.stringify({
+		FlxG.save.data.autosave = Json.stringify({
 			"song": _song
 		});
-		CocoaSave.save.flush();
+		FlxG.save.flush();
 	}
 
 	function clearEvents()

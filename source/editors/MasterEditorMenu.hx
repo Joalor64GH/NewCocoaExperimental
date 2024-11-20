@@ -92,7 +92,7 @@ class MasterEditorMenu extends MusicBeatState
 				case 'Dialogue Editor':
 					MusicBeatState.switchState(new DialogueEditorState());
 				case 'Chart Editor':
-					if (Main.Memory < 8 && !CocoaSave.save.data.dontShow)
+					if (Main.Memory < 8 && !FlxG.save.data.dontShow)
 					{
 						openSubState(new RAMWarningSubstate());
 						return;
@@ -182,7 +182,7 @@ private class RAMWarningSubstate extends MusicBeatSubstate
 		no.borderQuality = 10;
 		add(no);
 
-		var checked:Bool = cast CocoaSave.save.data.dontShow;
+		var checked:Bool = cast FlxG.save.data.dontShow;
 		checkbox = new CoolCheckbox(checked);
 		checkbox.setPosition(yes.x - 30, yes.y + 100);
 		add(checkbox);
@@ -272,8 +272,8 @@ private class RAMWarningSubstate extends MusicBeatSubstate
 			{
 				checkbox.checked = !checkbox.checked;
 
-				CocoaSave.save.data.dontShow = checkbox.checked;
-				CocoaSave.save.flush();
+				FlxG.save.data.dontShow = checkbox.checked;
+				FlxG.save.flush();
 			}
 		}
 		else 

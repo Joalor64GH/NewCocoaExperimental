@@ -66,7 +66,6 @@
 	<haxelib name="flixel-addons"/>
 	<haxelib name="flixel-ui"/>
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
-	<haxelib name="hscript"/> 
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
 	<haxelib name="SScript" if="SCRIPT_ALLOWED"/>
 
