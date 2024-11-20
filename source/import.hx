@@ -1,4 +1,4 @@
-#if !macro
+import PlayState;
 import Character.Boyfriend;
 import ColorBlindness.ColorBlindnessFilter;
 import GameplayChangersSubstate.GameplayOption;
@@ -8,4 +8,3 @@ import flixel.math.*;
 
 using CoolUtil;
 using StringTools;
-#end

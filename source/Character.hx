@@ -343,3 +343,34 @@ class Character extends FlxSprite
 			return script;
 	}
 }
+
+
+class Boyfriend extends Character
+{
+	public var startedDeath:Bool = false;
+
+	public function new(x:Float, y:Float, ?char:String = 'bf')
+	{
+		super(x, y, char, true);
+	}
+
+	override function update(elapsed:Float)
+	{
+		if (!debugMode && !PlayState.leftSide && animation.curAnim != null)
+		{
+			if (animation.curAnim.name.startsWith('sing'))
+			{
+				holdTimer += elapsed;
+			}
+			else
+				holdTimer = 0;
+
+			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished && startedDeath)
+			{
+				playAnim('deathLoop');
+			}
+		}
+
+		super.update(elapsed);
+	}
+}
