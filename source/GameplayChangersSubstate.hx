@@ -394,7 +394,7 @@ class GameplayOption
 	{
 		var save:FlxSave = FunkySettings.bind('gamechangers');
 		save.data.options = options;
-		return save.flush().succeeded;
+		return save.flush();
 	}
 
 	public function setChild(alpha:Alphabet)

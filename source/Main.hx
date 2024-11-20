@@ -44,7 +44,7 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
-		CocoaSave.save.bind("funkin", "Cocoa");
+		FlxG.save.bind("funkin", "Cocoa");
 		haxe.Log.trace = function(v, ?posInfos)
 		{
 			function formatOutput(v:Dynamic, infos:haxe.PosInfos):String 
