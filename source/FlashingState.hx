@@ -59,7 +59,7 @@ class FlashingState extends MusicBeatState
 				}
 				else
 				{
-					CocoaSave.save.data.flashing = true;
+					FlxG.save.data.flashing = true;
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 					FlxTween.tween(warnText, {alpha: 0}, 1, {
 						onComplete: function(twn:FlxTween)

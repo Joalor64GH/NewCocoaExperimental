@@ -1,6 +1,6 @@
 package;
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.ui.FlxUI9SliceSprite;

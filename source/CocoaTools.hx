@@ -1,7 +1,7 @@
 package;
 
 import flixel.math.FlxMath;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import haxe.Json;
 
 using CocoaTools;

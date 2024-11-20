@@ -1,6 +1,5 @@
 package;
 
-import CocoaSave.SaveCond;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSave;
 
@@ -67,7 +66,7 @@ class FunkySettings
 	// gets set everytime you change a setting!
 	public static function save():Bool
 	{
-		var save:CocoaSave = new CocoaSave();
+		var save:FlxSave = new FlxSave();
 		save.bind('settings', 'Cocoa');
 		save.data.timeLeft = timeLeft;
 		save.data.timeStyle = timeStyle;
@@ -94,7 +93,7 @@ class FunkySettings
 		save.data.splashOpacity = splashOpacity;
 		save.data.decimals = decimals;
 		
-		var achieveSave:CocoaSave = bind('achievements');
+		var achieveSave:FlxSave = bind('achievements');
 		achieveSave.data.achievementMap = Achievements.achievementMap;
 		achieveSave.data.achievementStats = Achievements.achievementStats;
 
@@ -103,7 +102,7 @@ class FunkySettings
 
 	public static function load():Bool
 	{
-		var save:CocoaSave = new CocoaSave();
+		var save:FlxSave = new FlxSave();
 		save.bind('settings', 'Cocoa');
 
 		GameplayOption.loadGameplayOptions();
@@ -202,9 +201,9 @@ class FunkySettings
 		return loadControls();
 	}
 
-	public static function bind(bind:String):CocoaSave
+	public static function bind(bind:String):FlxSave
 	{
-		var save:CocoaSave = new CocoaSave();
+		var save:FlxSave = new FlxSave();
 		save.bind(bind, 'Cocoa');
 
 		return save;
@@ -212,7 +211,7 @@ class FunkySettings
 
 	public static function loadControls():Bool
 	{
-		var save:CocoaSave = new CocoaSave();
+		var save:FlxSave = new FlxSave();
 		save.bind('controls', 'Cocoa');
 
 		if (save.data.controls != null)
@@ -225,7 +224,7 @@ class FunkySettings
 
 	public static function saveControls():Bool
 	{
-		var control:CocoaSave = new CocoaSave();
+		var control:FlxSave = new FlxSave();
 		control.bind('controls', 'Cocoa');
 
 		if (control.data != null)

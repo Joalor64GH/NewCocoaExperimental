@@ -297,7 +297,7 @@ class Achievements
 		loadModAchievements();
 		loadStats();
 
-		var achieveSave:CocoaSave = FunkySettings.bind('achievements');
+		var achieveSave:FlxSave = FunkySettings.bind('achievements');
 
 		if (achieveSave.data.henchmenDeath != null)
 			henchmenDeath = achieveSave.data.henchmenDeath;
@@ -318,7 +318,7 @@ class Achievements
 
 	public static function loadStats():Bool
 	{
-		var achieveSave:CocoaSave = FunkySettings.bind('achievements');
+		var achieveSave:FlxSave = FunkySettings.bind('achievements');
 
 		if (achieveSave.data.achievementStats != null)
 		{

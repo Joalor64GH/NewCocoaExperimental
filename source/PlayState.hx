@@ -67,7 +67,7 @@ class PlayState extends MusicBeatState
 	public var modchartTimers:Map<String, FlxTimer> = new Map();
 	public var modchartSounds:Map<String, FlxSound> = new Map();
 	public var modchartTexts:Map<String, ModchartText> = new Map();
-	public var modchartSaves:Map<String, CocoaSave> = new Map();
+	public var modchartSaves:Map<String, FlxSave> = new Map();
 	public var modchartGroups:Map<String, FlxTypedSpriteGroup<ModchartSprite>> = new Map();
 
 	// event variables
@@ -3419,8 +3419,8 @@ class PlayState extends MusicBeatState
 					Highscore.saveWeekScore(WeekData.getWeekFileName(), campaignScore, storyDifficulty);
 				}
 
-				CocoaSave.save.data.weekCompleted = StoryMenuState.weekCompleted;
-				CocoaSave.save.flush();
+				FlxG.save.data.weekCompleted = StoryMenuState.weekCompleted;
+				FlxG.save.flush();
 				usedPractice = false;
 				changedDifficulty = false;
 				cpuControlled = false;
@@ -4570,7 +4570,7 @@ class PlayState extends MusicBeatState
 
 				#if ACHIEVEMENTS_ALLOWED
 				Achievements.henchmenDeath++;
-				CocoaSave.save.data.henchmenDeath = Achievements.henchmenDeath;
+				FlxG.save.data.henchmenDeath = Achievements.henchmenDeath;
 				var achieve:String = checkForAchievement(['roadkill_enthusiast']);
 				if (achieve != null)
 				{
@@ -4578,7 +4578,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					CocoaSave.save.flush();
+					FlxG.save.flush();
 				}
 				FlxG.log.add('Deaths: ' + Achievements.henchmenDeath);
 				#end

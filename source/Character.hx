@@ -3,10 +3,19 @@ package;
 import flixel.FlxSprite;
 import flixel.tweens.FlxTween;
 import haxe.Json;
-import sys.FileSystem;
 import sys.io.File;
+import sys.FileSystem;
+import yaml.Yaml;
+import yaml.Renderer;
+import yaml.Parser;
 
 using StringTools;
+
+private enum CharacterType 
+{
+	COCOA;
+	//UNDERSCORE_;
+}
 
 typedef CharacterFile =
 {
@@ -41,6 +50,7 @@ class Character extends FlxSprite
 
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = DEFAULT_CHARACTER;
+
 	public var colorTween:FlxTween;
 	public var holdTimer:Float = 0;
 	public var heyTimer:Float = 0;
@@ -54,6 +64,7 @@ class Character extends FlxSprite
 	public var danceIdle:Bool = false; // Character use "danceLeft" and "danceRight" instead of "idle"
 
 	public var healthIcon:String = 'face';
+	public var animationsArray:Array<AnimArray> = [];
 
 	public var positionArray:Array<Float> = [0, 0];
 	public var cameraPosition:Array<Float> = [0, 0];
@@ -64,12 +75,10 @@ class Character extends FlxSprite
 	public var noAntialiasing:Bool = false;
 	public var originalFlipX:Bool = false;
 	public var healthColorArray:Array<Int> = [255, 0, 0];
-	public var animationsArray:Array<AnimArray> = [];
-	public var script:FunkinScript = new FunkinScript();
 
 	public static final DEFAULT_CHARACTER:String = 'bf'; // In case a character is missing, it will use BF on its place
 
-	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
+	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false, type:CharacterType = COCOA)
 	{
 		super(x, y);
 
@@ -81,43 +90,140 @@ class Character extends FlxSprite
 
 		switch (curCharacter)
 		{
-			// case 'your character name in case you want to hardcode them instead':
+			// case 'your character name in case you want to hardcode him instead':
 			default:
-				var characterPath:String = 'characters/' + curCharacter;
-				var path:String = Paths.mods(characterPath + '.cocoa');
-				if (!FileSystem.exists(path))
-				{
-					path = Paths.getPath(characterPath + '.cocoa');
-				}
-				if (!FileSystem.exists(path))
-					path = Paths.getPath('characters/$DEFAULT_CHARACTER.cocoa');
-
-				/*-var yath:CharacterFile = Yaml.read(path.substring(0, path.length - 5) + "yaml", yaml.Parser.options().useObjects());
-				File.saveContent(path, JsonToCharacter(yath));*/
-
-				try 
-				{
-					script.doString(File.getContent(path));
-					var anims:String = script.call("createCharacter", [this]);
-					animationsArray = cast Json.parse(CoolUtil.decode(anims)).anims;
-				}
-				catch (e)
-				{
-					trace('FAILED TO LOAD $curCharacter!!!');
-				}
-				
-			/*for (i in characters)
+			if (type == COCOA)
 			{
-				
-				//trace(i);
-				var path:String = 'assets/characters/${i}.cocoa';
-				var string:String = File.getContent(path);
-				var icon:String = new SScript().doString(string).call('returnIcon', []);
-				trace(icon);
-				string = string.replace('return "$icon"', 'return "${CoolUtil.encode(icon)}"');
-				File.saveContent(path, string);
-			}*/
+				var characterPath:String = 'characters/' + curCharacter;
+				var path:String = Paths.mods(characterPath + '.yaml');
+				if (!FileSystem.exists(path))
+				{
+					path = Paths.getPath(characterPath + '.yaml');
+				}
+
+				if (!FileSystem.exists(path))
+				{
+					path = Paths.mods('$characterPath.char');
+					if (!FileSystem.exists(path))
+					{
+						if (!FileSystem.exists(path))
+							path = Paths.getPath('$characterPath.char');
+						if (!FileSystem.exists(path))
+							path = Paths.getPath('characters/bf.char');
+
+						if (FileSystem.exists(path))
+						{
+							var cot:String = File.getContent(path);
+							var encode:String = CoolUtil.decode(CoolUtil.decode(cot));
+							path = path.substring(0, path.length - 4) + 'yaml';
+							var characterFile:CharacterFile = Json.parse(encode);
+							Yaml.write(path, characterFile, Renderer.options().setFlowLevel(1));
+						}
+						else 
+						{
+							path = Paths.mods('$characterPath.json');
+							if (!FileSystem.exists(path))
+								path = Paths.getPath('$characterPath.json');
+							if (!FileSystem.exists(path))
+								path = Paths.getPath('characters/bf.json');
+
+							if (FileSystem.exists(path))
+							{
+								var cot:String = File.getContent(path);
+								var encodedFile:CharacterFile = Json.parse(cot);
+								path = path.substring(0, path.length - 4) + 'yaml';
+								Yaml.write(path, encodedFile, Renderer.options().setFlowLevel(1));
+							}
+						}
+					}
+					else
+					{
+						var cot:String = File.getContent(path);
+						var encode:String = CoolUtil.decode(CoolUtil.decode(cot));
+						path = path.substring(0, path.length - 4) + 'yaml';
+						var characterFile:CharacterFile = Json.parse(encode);
+						Yaml.write(path, characterFile, Renderer.options().setFlowLevel(1));
+					}
+				}
+
+				var json:CharacterFile = cast Yaml.read(path.substring(0, path.length - 4) + 'yaml', Parser.options().useObjects());
+				if (Paths.exists('images/' + json.image + '.txt'))
+				{
+					frames = Paths.getPackerAtlas(json.image);
+				}
+				else if (Paths.exists('images/${json.image}.json'))
+				{
+					frames = Paths.getJsonAtlas(json.image);
+				}
+				else
+				{
+					frames = Paths.getSparrowAtlas(json.image);
+				}
+				imageFile = json.image;
+
+				if (json.scale != 1)
+				{
+					jsonScale = json.scale;
+					setGraphicSize(Std.int(width * jsonScale));
+					updateHitbox();
+				}
+
+				positionArray = json.position;
+				cameraPosition = json.camera_position;
+
+				healthIcon = json.healthicon;
+				singDuration = json.sing_duration;
+
+				if (json.miss_duration != null)
+					missDuration = json.miss_duration;
+				else
+					missDuration = 1.5;
+
+				flipX = !!json.flip_x;
+				if (json.no_antialiasing)
+				{
+					antialiasing = false;
+					noAntialiasing = true;
+				}
+
+				if (json.healthbar_colors != null && json.healthbar_colors.length > 2)
+					healthColorArray = json.healthbar_colors;
+
+				antialiasing = !noAntialiasing;
+				if (FunkySettings.noAntialiasing)
+					antialiasing = false;
+
+				animationsArray = json.animations;
+				if (animationsArray != null && animationsArray.length > 0)
+				{
+					for (anim in animationsArray)
+					{
+						var animAnim:String = '' + anim.anim;
+						var animName:String = '' + anim.name;
+						var animFps:Int = anim.fps;
+						var animLoop:Bool = !!anim.loop; // Bruh
+						var animIndices:Array<Int> = anim.indices;
+						if (animIndices != null && animIndices.length > 0)
+						{
+							animation.addByIndices(animAnim, animName, animIndices, "", animFps, animLoop);
+						}
+						else
+						{
+							animation.addByPrefix(animAnim, animName, animFps, animLoop);
+						}
+
+						if (anim.offsets != null && anim.offsets.length > 1)
+						{
+							addOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
+						}
+					}
+				}
+				else
+				{
+					quickAnimAdd('idle', 'BF idle dance');
+				}
 				// trace('Loaded file to character ' + curCharacter);
+			}
 		}
 
 		originalFlipX = flipX;
@@ -269,77 +375,35 @@ class Character extends FlxSprite
 	{
 		animation.addByPrefix(name, anim, 24, false);
 	}
+}
 
-	public static function JsonToCharacter(json:CharacterFile):String
+
+class Boyfriend extends Character
+{
+	public var startedDeath:Bool = false;
+
+	public function new(x:Float, y:Float, ?char:String = 'bf')
 	{
-		var script:String = 'function createCharacter(char:Character)';
-				script += '\n{';
-				script += '\n\t';
-				if (Paths.exists('images/' + json.image + '.txt'))
-				{
-					script += 'char.frames = Paths.getPackerAtlas(\"${json.image}\");';
-				}
-				else if (Paths.exists('images/${json.image}.json'))
-				{
-					script += 'char.frames = Paths.getJsonAtlas(\"${json.image}\");';
-				}
-				else
-				{
-					script += 'char.frames = Paths.getSparrowAtlas(\"${json.image}\");';
-				}
-				script += '\n\tchar.imageFile = "${json.image}";';
-				script += '\n\n';
-				var anims:Array<AnimArray> = try json.animations catch(e) [{anim: "idle", name: "BF idle dance", fps: 24, indices: null, offsets: [0, 0], loop: false}];
-				for (anim in anims)
-				{
-					var animAnim:String = '' + anim.anim;
-					var animName:String = '' + anim.name;
-					var animFps:Int = anim.fps;
-					var animLoop:Bool = !!anim.loop; 
-					var animIndices:Array<Int> = anim.indices;
-					var literal:String = '\n';
-					if (anims.indexOf(anim) == anims.length - 1)
-						literal = '';
+		super(x, y, char, true);
+	}
 
-					if (animIndices != null && animIndices.length > 0)
-						script += '\tchar.animation.addByIndices(\"$animAnim\", \"$animName\", $animIndices, "", $animFps, $animLoop);$literal';
-					else
-						script += '\tchar.animation.addByPrefix(\"$animAnim\", \"$animName\", $animFps, $animLoop);$literal';
-				}
-				script += '\n\n';
-				for (anim in anims)
-					if (anim.offsets != null && anim.offsets.length > 0)
-					{
-						var literal = '\n';
-						if (anims.indexOf(anim) == anims.length - 1)
-							literal = '';
+	override function update(elapsed:Float)
+	{
+		if (!debugMode && !PlayState.leftSide && animation.curAnim != null)
+		{
+			if (animation.curAnim.name.startsWith('sing'))
+			{
+				holdTimer += elapsed;
+			}
+			else
+				holdTimer = 0;
 
-						script += '\tchar.addOffset("${"" + anim.anim}", ${anim.offsets[0]}, ${anim.offsets[1]});$literal';
-					}
+			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished && startedDeath)
+			{
+				playAnim('deathLoop');
+			}
+		}
 
-				var anim:{anims:Array<AnimArray>} = {anims: json.animations};
-				var anim:String = CoolUtil.encode(Json.stringify(anim, "\t"));
-				script += '\n\n';
-				script += '\tchar.scale.set(${json.scale}, ${json.scale});\n';
-				script += '\tchar.updateHitbox();\n';
-				script += '\n\tchar.positionArray = ${json.position};';
-				script += '\n\tchar.cameraPosition = ${json.camera_position};';
-				script += '\n\n\tchar.healthIcon = "${json.healthicon}";';
-				script += '\n\tchar.singDuration = ${json.sing_duration};';
-				script += '\n\tchar.missDuration = ${json.miss_duration != null ? json.miss_duration : 1.3};\n';
-				script += '\n\tchar.flipX = ${!!json.flip_x};';
-				script += '\n\n\tchar.healthColorArray = ${json.healthbar_colors != null && json.healthbar_colors.length > 2 ? json.healthbar_colors : [0, 0, 0]};';
-				script += '\n\n\tchar.antialiasing = ${!json.no_antialiasing};';
-				script += '\n\tchar.noAntialiasing = !char.antialiasing;';
-				script += '\n\n\t//DO NOT CHANGE THIS';
-				script += '\n\treturn "$anim";';
-				script += '\n}';
-
-				script += '\n\nfunction returnIcon()';
-				script += '\n{';
-				script += '\n\treturn "${CoolUtil.encode(json.healthicon)}";';
-				script += '\n}';
-			
-			return script;
+		super.update(elapsed);
 	}
 }

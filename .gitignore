@@ -1,2 +1,4 @@
 export/
-.vscode/
+.vscode/*
+.haxelib/
+.DS_Store
