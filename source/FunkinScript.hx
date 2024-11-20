@@ -30,7 +30,6 @@ final class FunkinScript extends SScript
 		super(scriptFile, preset, false);
 
 		traces = false;
-		privateAccess = true;
 		
 		execute();
 	}

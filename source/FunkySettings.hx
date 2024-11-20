@@ -92,12 +92,17 @@ class FunkySettings
 		save.data.colorFilter = colorFilter;
 		save.data.splashOpacity = splashOpacity;
 		save.data.decimals = decimals;
-		
+
 		var achieveSave:FlxSave = bind('achievements');
 		achieveSave.data.achievementMap = Achievements.achievementMap;
 		achieveSave.data.achievementStats = Achievements.achievementStats;
+		achieveSave.flush();
 
-		return achieveSave.flush().succeeded && save.flush().succeeded && achieveSave.flush().succeeded && saveControls();
+		saveControls();
+
+		var flush:Bool = save.flush() && achieveSave.flush();
+		// trace(flush);
+		return flush && FlxG.save.flush();
 	}
 
 	public static function load():Bool
@@ -174,7 +179,7 @@ class FunkySettings
 
 		if (save.data.sustainStyle != null)
 			sustainStyle = save.data.sustainStyle;
-
+		
 		if (save.data.fpsStyle != null)
 			fpsStyle = save.data.fpsStyle;
 
@@ -192,12 +197,13 @@ class FunkySettings
 
 		if (save.data.decimals != null)
 			decimals = save.data.decimals;
-		 
+
 		/*if (!Achievements.loadAchievements())
 			trace('ERROR LOADING ACHIEVEMENTS'); */
 
 		FlxG.sound.volume = FlxG.save.data.volume;
 		FlxG.sound.muted = FlxG.save.data.mute;
+
 		return loadControls();
 	}
 
@@ -219,7 +225,7 @@ class FunkySettings
 
 		PlayerSettings.player1.controls.loadKeybinds();
 
-		return save.flush().succeeded;
+		return save.flush();
 	}
 
 	public static function saveControls():Bool
@@ -232,6 +238,6 @@ class FunkySettings
 
 		PlayerSettings.player1.controls.loadKeybinds();
 
-		return control.flush().succeeded;
+		return control.flush();
 	}
 }
