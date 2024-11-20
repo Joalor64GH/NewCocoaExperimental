@@ -2163,7 +2163,7 @@ class OldChartingState extends MusicBeatState
 			}
 
 			var script:FunkinScript = new FunkinScript(path);
-			var iconToReturn = script.call("returnIcon", []);
+			var iconToReturn:String = script.call("returnIcon", []).returnValue;
 			return CoolUtil.decode(iconToReturn);
 		}
 		catch (e) "face";

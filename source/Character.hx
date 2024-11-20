@@ -97,7 +97,7 @@ class Character extends FlxSprite
 
 				try 
 				{
-					var anims:String = script.doString(File.getContent(path)).call("createCharacter", [this]);
+					var anims:String = script.doString(File.getContent(path)).call("createCharacter", [this]).returnValue;
 					animationsArray = cast Json.parse(CoolUtil.decode(anims)).anims;
 				}
 				catch (e)
